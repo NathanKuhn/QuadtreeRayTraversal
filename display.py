@@ -1,23 +1,22 @@
 import pygame
 from pygame.math import Vector2
 from quadtree import QuadTree
-from method_2 import quadtree_intersect
+from method_2 import quadtree_intersect, make_quadtree
 
 
 def main():
     # Create a quadtree
-    qt = QuadTree(0, 0, 512, 512)
-    qt.add_child(2).add_child(3, leaf=True)
-    m = qt.add_child(1)
-    m.add_child(3, leaf=True)
-    m.add_child(0, leaf=True)
+    qt = make_quadtree()
+
+    ray_start = Vector2(-10, 5)
+    ray_dir = Vector2(0.4, 0.9)
+
+    t = quadtree_intersect(qt, ray_start, ray_dir)
 
     # Create a display
     pygame.init()
     screen = pygame.display.set_mode((612, 612))
     pygame.display.set_caption("Quadtree")
-
-    ray_start = Vector2(-10, 5)
 
     # Main loop
     while True:
