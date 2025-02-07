@@ -11,7 +11,7 @@ def main():
     ray_start = Vector2(-10, 5)
     ray_dir = Vector2(0.4, 0.9)
 
-    t = quadtree_intersect(qt, ray_start, ray_dir)
+    t, d = quadtree_intersect(qt, ray_start, ray_dir)
 
     # Create a display
     pygame.init()
@@ -43,7 +43,7 @@ def main():
         else:
             ray_dir = Vector2(0, 1)
 
-        t = quadtree_intersect(
+        t, d = quadtree_intersect(
             qt,
             Vector2(ray_start.x, ray_start.y),
             Vector2(ray_dir.x, ray_dir.y),
@@ -65,6 +65,13 @@ def main():
                 pygame.draw.rect(
                     screen,
                     (0, 255, 0),
+                    (50 + node.x0, 50 + node.y0, node.x1 - node.x0, node.y1 - node.y0),
+                )
+
+            if node in d:
+                pygame.draw.rect(
+                    screen,
+                    (0, 0, min(255, len(stack) * 50)),
                     (50 + node.x0, 50 + node.y0, node.x1 - node.x0, node.y1 - node.y0),
                 )
 

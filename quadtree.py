@@ -33,26 +33,26 @@ class QuadTree:
         if index == 0:
             self.c0 = QuadTree(x0, y0, x1, y1, leaf=leaf)
             return self.c0
-        
+
         elif index == 1:
             self.c1 = QuadTree(x0, y0, x1, y1, leaf=leaf)
             return self.c1
-        
+
         elif index == 2:
             self.c2 = QuadTree(x0, y0, x1, y1, leaf=leaf)
             return self.c2
-        
+
         elif index == 3:
             self.c3 = QuadTree(x0, y0, x1, y1, leaf=leaf)
             return self.c3
-        
+
         else:
             raise ValueError("Invalid index")
-    
+
     def get_child(self, index, shift=0):
         if index > 3:
             raise ValueError("Invalid index")
-        
+
         index = (index + shift) % 4
         if index == 0:
             return self.c0
@@ -62,9 +62,32 @@ class QuadTree:
             return self.c2
         else:
             return self.c3
-    
+
+    def contains_point(self, x, y):
+        return self.x0 <= x < self.x1 and self.y0 <= y < self.y1
+
+    def get_child_from_point(self, x, y):
+        if not self.contains_point(x, y):
+            return None
+
+        mx = (self.x0 + self.x1) / 2
+        my = (self.y0 + self.y1) / 2
+
+        if x < mx:
+            if y < my:
+                return self.c0
+            else:
+                return self.c2
+        else:
+            if y < my:
+                return self.c1
+            else:
+                return self.c3
+
     def __str__(self):
-        return f"QuadTree({self.x0}, {self.y0}, {self.x1}, {self.y1}, leaf={self.is_leaf})"
-    
+        return (
+            f"QuadTree({self.x0}, {self.y0}, {self.x1}, {self.y1}, leaf={self.is_leaf})"
+        )
+
     def __repr__(self):
         return str(self)
