@@ -39,6 +39,9 @@ def find_first_child(
 
 
 def quadtree_intersect(qt: QuadTree, ro: Vector2, rd: Vector2) -> float:
+    ro = ro.copy()
+    rd = rd.copy()
+
     start_height = 9  # 512x512 quadtree
 
     node_pos = Vector2(qt.x0, qt.y0)
@@ -48,6 +51,19 @@ def quadtree_intersect(qt: QuadTree, ro: Vector2, rd: Vector2) -> float:
         rd.x = 1e-6 * (1 if rd.x > 0 else -1)
     if abs(rd.y) < 1e-6:
         rd.y = 1e-6 * (1 if rd.y > 0 else -1)
+
+    child_id_flip = 0
+    if rd.x < 0:
+        child_id_flip |= 1
+    if rd.y < 0:
+        child_id_flip |= 2
+
+    ray_dir_sign = Vector2(1 if rd.x >= 0 else -1, 1 if rd.y >= 0 else -1)
+    ro += Vector2(0.5, 0.5)
+    ro -= Vector2(256, 256)
+    ro = vec_mul(ro, ray_dir_sign)
+    ro += Vector2(256, 256)
+    rd = Vector2(abs(rd.x), abs(rd.y))
 
     inv_ray_dir = Vector2(1 / rd.x, 1 / rd.y)
     node_t0 = vec_mul((node_pos - ro), inv_ray_dir)
@@ -74,7 +90,7 @@ def quadtree_intersect(qt: QuadTree, ro: Vector2, rd: Vector2) -> float:
     while node_height <= start_height:
         child_t1 = vec_mul((child_pos + child_node_size - ro), inv_ray_dir)
         t_child_exit = min(child_t1.x, child_t1.y)
-        child_node = node.get_child(child_id)
+        child_node = node.get_child(child_id ^ child_id_flip)
 
         if child_node is not None:
             child_t0 = vec_mul((child_pos - ro), inv_ray_dir)
@@ -174,8 +190,8 @@ def make_quadtree():
 def run_test():
     qt = make_quadtree()
 
-    ray_start = Vector2(-10, 5)
-    ray_dir = Vector2(0.4, 0.9)
+    ray_start = Vector2(209, 545)
+    ray_dir = Vector2(0.52, -0.85)
 
     t = quadtree_intersect(qt, ray_start, ray_dir)
 
