@@ -1,7 +1,15 @@
 import pygame
 from pygame.math import Vector2
 from quadtree import QuadTree
-from method_2 import quadtree_intersect, make_quadtree
+from intersect import quadtree_intersect, make_quadtree
+
+
+def r(x, y, w, h):
+    return x, 612 - y - h, w, h
+
+
+def p(x, y):
+    return x, 612 - y
 
 
 def main():
@@ -11,7 +19,7 @@ def main():
     ray_start = Vector2(-10, 5)
     ray_dir = Vector2(0.4, 0.9)
 
-    t, d = quadtree_intersect(qt, ray_start, ray_dir)
+    t = quadtree_intersect(qt, ray_start, ray_dir)
 
     # Create a display
     pygame.init()
@@ -28,22 +36,23 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
+                    print(ray_start, ray_dir)
                     return
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    mpos = pygame.mouse.get_pos()
+                    mpos = p(*pygame.mouse.get_pos())
                     ray_start = Vector2(mpos[0] - 50, mpos[1] - 50)
 
         # Change the ray
-        mpos = pygame.mouse.get_pos()
+        mpos = p(*pygame.mouse.get_pos())
         ray_dir = Vector2(mpos[0] - 50, mpos[1] - 50) - ray_start
         if ray_dir != Vector2(0, 0):
             ray_dir.normalize_ip()
         else:
             ray_dir = Vector2(0, 1)
 
-        t, d = quadtree_intersect(
+        t = quadtree_intersect(
             qt,
             Vector2(ray_start.x, ray_start.y),
             Vector2(ray_dir.x, ray_dir.y),
@@ -65,20 +74,13 @@ def main():
                 pygame.draw.rect(
                     screen,
                     (0, 255, 0),
-                    (50 + node.x0, 50 + node.y0, node.x1 - node.x0, node.y1 - node.y0),
-                )
-
-            if node in d:
-                pygame.draw.rect(
-                    screen,
-                    (0, 0, min(255, len(stack) * 50)),
-                    (50 + node.x0, 50 + node.y0, node.x1 - node.x0, node.y1 - node.y0),
+                    r(50 + node.x0, 50 + node.y0, node.x1 - node.x0, node.y1 - node.y0),
                 )
 
             pygame.draw.rect(
                 screen,
                 (255, 255, 255),
-                (50 + node.x0, 50 + node.y0, node.x1 - node.x0, node.y1 - node.y0),
+                r(50 + node.x0, 50 + node.y0, node.x1 - node.x0, node.y1 - node.y0),
                 1,
             )
 
@@ -97,14 +99,14 @@ def main():
         pygame.draw.line(
             screen,
             (255, 0, 0),
-            (50 + ray_start[0], 50 + ray_start[1]),
-            (50 + ray_end[0], 50 + ray_end[1]),
+            p(50 + ray_start[0], 50 + ray_start[1]),
+            p(50 + ray_end[0], 50 + ray_end[1]),
             1,
         )
         pygame.draw.circle(
-            screen, (255, 0, 0), (50 + ray_start[0], 50 + ray_start[1]), 5
+            screen, (255, 0, 0), p(50 + ray_start[0], 50 + ray_start[1]), 5
         )
-        pygame.draw.circle(screen, (255, 0, 0), (50 + ray_end[0], 50 + ray_end[1]), 5)
+        pygame.draw.circle(screen, (255, 0, 0), p(50 + ray_end[0], 50 + ray_end[1]), 5)
 
         pygame.display.flip()
 
