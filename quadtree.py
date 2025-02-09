@@ -1,3 +1,5 @@
+from pygame import Vector2
+
 class QuadTree:
     def __init__(self, x0, y0, x1, y1, leaf=False):
         self.x0 = x0
@@ -11,6 +13,9 @@ class QuadTree:
         self.c1 = None
         self.c2 = None
         self.c3 = None
+    
+    def get_center(self):
+        return Vector2((self.x0 + self.x1) / 2, (self.y0 + self.y1) / 2)
 
     def get_child_dim(self, index):
         mx = (self.x0 + self.x1) / 2
